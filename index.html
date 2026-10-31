@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evenstar — Process Simulator</title>
+  <meta name="description" content="Evenstar is a modern process simulator for chemical and industrial engineers. Model, analyze, and optimize process systems." />
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --surface: #121820;
+      --surface-2: #1a2230;
+      --border: #2a3544;
+      --text: #e8eef6;
+      --muted: #8b9bb0;
+      --accent: #3ee0c2;
+      --accent-2: #5b8cff;
+      --accent-soft: rgba(62, 224, 194, 0.12);
+      --radius: 16px;
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11, 15, 20, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo span { color: var(--accent); }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+    }
+    .nav-links a { color: var(--muted); font-size: 0.95rem; }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #04120f;
+      font-weight: 600;
+      padding: 12px 22px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+      text-decoration: none;
+    }
+    .btn:hover {
+      background: #5cf0d4;
+      transform: translateY(-1px);
+      text-decoration: none;
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover {
+      background: var(--surface-2);
+      border-color: var(--muted);
+    }
+
+    /* Hero */
+    .hero {
+      padding: 100px 0 80px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 20px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      font-size: clamp(2.8rem, 6vw, 4.6rem);
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1.05;
+      margin-bottom: 20px;
+    }
+    .hero h1 span {
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--muted);
+      max-width: 640px;
+      margin: 0 auto 36px;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Sections */
+    section { padding: 80px 0; }
+    .section-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .section-sub {
+      color: var(--muted);
+      text-align: center;
+      max-width: 560px;
+      margin: 0 auto 48px;
+    }
+
+    /* Features */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #3a4a5c;
+    }
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card p { color: var(--muted); font-size: 0.98rem; }
+    .icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent-soft);
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      font-size: 1.2rem;
+    }
+
+    /* Download */
+    .download {
+      background: linear-gradient(180deg, var(--bg) 0%, #0f1720 100%);
+      text-align: center;
+    }
+    .download-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px 40px;
+      max-width: 680px;
+      margin: 0 auto;
+      box-shadow: var(--shadow);
+    }
+    .download-box h2 { margin-bottom: 12px; }
+    .download-box p { color: var(--muted); margin-bottom: 28px; }
+    .placeholder-note {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 16px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hero { padding: 70px 0 50px; }
+      .download-box { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">Even<span>star</span></div>
+        <div class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#download">Download</a>
+          <a href="#about">About</a>
+        </div>
+        <a href="#download" class="btn">Get Evenstar</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-badge">Process Simulation</div>
+        <h1>Model complex processes<br><span>with clarity</span></h1>
+        <p>Evenstar is a modern process simulator built for chemical engineers and industrial teams who need accurate, practical simulation without unnecessary complexity.</p>
+        <div class="hero-actions">
+          <a href="#download" class="btn">Download on GitHub</a>
+          <a href="#features" class="btn btn-outline">See features</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features">
+      <div class="container">
+        <h2 class="section-title">Built for real process work</h2>
+        <p class="section-sub">Focused tools for steady-state modeling, unit operations, and industrial analysis.</p>
+        <div class="features-grid">
+          <div class="card">
+            <h3><span class="icon">◎</span> Steady-state modeling</h3>
+            <p>Build and solve flowsheets with recycles, heat integration, and realistic unit operations.</p>
+          </div>
+          <div class="card">
+            <h3><span class="icon">△</span> Unit operations library</h3>
+            <p>Reactors, separators, heat exchangers, compressors, and custom blocks ready to use.</p>
+          </div>
+          <div class="card">
+            <h3><span class="icon">▣</span> Clear results</h3>
+            <p>Stream tables, energy balances, and visual flowsheet feedback that engineers actually use.</p>
+          </div>
+          <div class="card">
+            <h3><span class="icon">⚡</span> Fast iteration</h3>
+            <p>Designed for rapid scenario testing and design studies without heavy overhead.</p>
+          </div>
+          <div class="card">
+            <h3><span class="icon">◈</span> Open & practical</h3>
+            <p>Built for engineers who want control over their models and data.</p>
+          </div>
+          <div class="card">
+            <h3><span class="icon">★</span> Evenstar</h3>
+            <p>A focused simulator for process design, troubleshooting, and teaching.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Download -->
+    <section id="download" class="download">
+      <div class="container">
+        <div class="download-box">
+          <h2>Get Evenstar</h2>
+          <p>Download the latest release or explore the source on GitHub. Replace the link below with your repository URL.</p>
+          <!-- PLACEHOLDER BUTTON — replace href with your actual GitHub repo -->
+          <a href="https://github.com/YOUR_USERNAME/evenstar" class="btn" target="_blank" rel="noopener">
+            View on GitHub / Download
+          </a>
+          <p class="placeholder-note">Button links to a placeholder. Update the href in the HTML with your real repository.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about">
+      <div class="container">
+        <h2 class="section-title">About Evenstar</h2>
+        <p class="section-sub">
+          Evenstar is a process simulator developed for practical industrial and educational use.
+          It focuses on clear modeling of chemical and process systems — from simple unit operations to more complex flowsheets.
+          <br><br>
+          Replace this text with a short description of what makes Evenstar different, its target users, and any key technical capabilities.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>Evenstar · Process Simulator</p>
+      <p style="margin-top: 8px;">© 2026 · Built with care for engineers</p>
+    </div>
+  </footer>
+</body>
+</html>
