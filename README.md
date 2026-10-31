@@ -1,1 +1,0 @@
-# thmgarnier.github.io
